@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var bluebird = require('bluebird');
 var cors = require('cors');
 var bodyParser = require('body-parser');
+var beautifulUnique = require('mongoose-beautiful-unique-validation');
 
 var port = process.env.PORT || 8000;
 // var routes = require('./config/routes');
