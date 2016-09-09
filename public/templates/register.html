@@ -1,0 +1,30 @@
+<h1>Register</h1>
+
+<form ng-submit="register.submit()" name="register.form" novalidate>
+  <div class="form-group">
+    <input type="text" name="username" class="form-control" ng-model="register.user.username" ng-focus="register.form.username.$setUntouched()" placeholder="Username" required>
+    <div class="error" ng-messages="register.form.username.$error">
+      <small ng-message="required">Username is required</small>
+    </div>
+  </div>
+  <div class="form-group">
+    <input type="email" name="email" class="form-control" ng-model="register.user.email" placeholder="Email" required>
+    <div class="error" ng-messages="register.form.email.$error">
+      <small ng-message="required">Email is required</small>
+    </div>
+  </div>
+  <div class="form-group">
+    <input type="password" name="password" class="form-control" ng-model="register.user.password" placeholder="Password" required>
+    <div class="error" ng-messages="register.form.password.$error">
+      <small ng-message="required">Password is required</small>
+    </div>
+  </div>
+  <div class="form-group">
+    <input type="password" name="passwordConfirmation" class="form-control" ng-model="register.user.passwordConfirmation" placeholder="Password confirmation" required>
+    <div class="error" ng-messages="register.form.passwordConfirmation.$error">
+      <small ng-message="required">Password Confirmation is required</small>
+    </div>
+  </div>
+
+  <input type="submit" value="Submit" class="btn btn-primary" ng-disabled="register.form.$invalid">
+</form>
