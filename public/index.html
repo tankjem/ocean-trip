@@ -20,16 +20,14 @@
         <li ng-if="!main.currentUser" class="nav-item active" ui-sref-active="active">
         <a class="nav-link" ui-sref="login">Login</a>
         </li>
+        <li ng-if="main.currentUser" ng-click="main.logout()" class="nav-item">
+          <a class="nav-link">Logout</a>
+        </li>
       </ul>
     </nav>
 </header>
 <main class="container" ui-view></main>
-<!-- <h1>Ocean Trip</h1>
-<h3>Hope you have a whale of a time!</h3>
 
-<button class="facebook"><i class="fa fa-facebook-square" aria-hidden="true"></i></button>
-<button class="twitter"><i class="fa fa-twitter-square" aria-hidden="true"></i></button>
-<button class="github"><i class="fa fa-github-square" aria-hidden="true"></i></button> -->
 
 </body>
 </html>

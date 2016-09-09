@@ -2,13 +2,8 @@ angular
   .module("OceanTripApp", ["ngResource", "ui.router", "satellizer", "angular-jwt"])
   .constant("API_URL", "http://localhost:8000/api")
   .config(oAuthConfig)
-  // .config(setupInterceptor)
   .config(Router);
 
-// setupInterceptor.$inject = ["$httpProvider"];
-// function setupInterceptor($httpProvider) {
-//   return $httpProvider.interceptors.push("AuthInterceptor");
-// } 
 
 oAuthConfig.$inject = ["$authProvider"];
 function oAuthConfig($authProvider) {
@@ -41,6 +36,7 @@ function Router($stateProvider, $urlRouterProvider) {
       templateUrl: 'templates/login.html',
       controller: "LoginController as login"
     });
+    
     $urlRouterProvider.otherwise('/');
 }
 angular
@@ -52,11 +48,19 @@ function LoginController(User, $state, $rootScope) {
 
   this.credentials = {};
 
+  this.authenticate = function(provider) {
+    $auth.authenticate(provider)
+      .then(function() {
+        $rootScope.$broadcast("loggedIn");
+        $state.go("home");
+      });
+  }
+
   this.submit = function submit() {
     User.login(this.credentials, function(res) {
       // console.log(res);
       $rootScope.$broadcast("loggedIn");
-      $state.go("dreams");
+      $state.go("home");
     });
   }
 }
@@ -85,8 +89,8 @@ angular
   .module("OceanTripApp")
   .controller("RegisterController", RegisterController);
 
-RegisterController.$inject = ["$auth", "$state"];
-function RegisterController($auth, $state) {
+RegisterController.$inject = ["$auth", "$state", "$rootScope"];
+function RegisterController($auth, $state, $rootScope) {
 
   this.user = {};
 

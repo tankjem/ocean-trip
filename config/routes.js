@@ -1,10 +1,11 @@
 var router = require('express').Router();
+var authController = require('../controllers/authentications');
 
 var router = require('express').Router();
 var jwt = require('jsonwebtoken');
 var secret = require('./tokens').secret;
 
-var authController = require('../controllers/authentications');
+
 function secureRoute(req, res, next) {
   if(!req.headers.authorization) return res.status(401).json({ message: "Unauthorized" });
 
