@@ -1,0 +1,22 @@
+{
+  "name": "ocean-trip",
+  "description": "Ocean holidays",
+  "main": "app.js",
+  "authors": [
+    "Jeremy Smith <jmsmith57@hotmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/tankjem/ocean-trip",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.8",
+    "angular-resource": "^1.5.8",
+    "angular-ui-router": "^0.3.1"
+  }
+}
