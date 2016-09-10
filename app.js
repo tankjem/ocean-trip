@@ -16,9 +16,16 @@ var databaseUri = require('./config/db')(environment);
 mongoose.Promise = bluebird;
 mongoose.connect(databaseUri);
 
+app.get('/*', function(req, res, next){ 
+  res.setHeader('Last-Modified', (new Date()).toUTCString());
+  next(); 
+});
+
+
 if('test' !== environment) {
   app.use(morgan('dev'));
 }
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
