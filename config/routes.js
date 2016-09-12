@@ -1,5 +1,8 @@
 var router = require('express').Router();
 var authController = require('../controllers/authentications');
+var githubController = require('../controllers/githubOauth');
+var facebookController = require('../controllers/facebookOauth');
+var twitterController = require('../controllers/twitterOauth');
 
 var router = require('express').Router();
 var jwt = require('jsonwebtoken');
@@ -19,6 +22,9 @@ function secureRoute(req, res, next) {
   });
 }
 
+router.post('/oauth/github', githubController.login);
+router.post('/oauth/twitter', twitterController.login);
+router.post('/oauth/facebook', facebookController.login);
 router.post('/register', authController.register);
 router.post('/login', authController.login);
 
