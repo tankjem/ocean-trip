@@ -40,6 +40,11 @@ function Router($stateProvider, $urlRouterProvider) {
       url:'/login',
       templateUrl: 'templates/login.html',
       controller: "LoginController as login"
+    })
+    .state('map', {
+      url: '/map',
+      templateUrl: 'templates/map.html',
+      controller: "MapController as map"
     });
     
     $urlRouterProvider.otherwise('/');
@@ -57,7 +62,7 @@ function LoginController($auth, $state, $rootScope) {
     $auth.authenticate(provider)
       .then(function() {
         $rootScope.$broadcast("loggedIn");
-        $state.go("home");
+        $state.go("map");
       });
   }
 
@@ -66,7 +71,7 @@ function LoginController($auth, $state, $rootScope) {
       url: "/api/login"
     }).then(function(){
         $rootScope.$broadcast("loggedIn");
-        $state.go('home');
+        $state.go('map');
     });
   }
 }
@@ -93,6 +98,30 @@ function MainController($auth, $state, $rootScope) {
 }
 angular
   .module("OceanTripApp")
+  .controller("MapController", MapController);
+
+RegisterController.$inject = ["$scope"];
+function MapController($scope) {
+  var self = $scope ;
+
+  self.createMap = function (){
+    var latlng = new google.maps.LatLng(51.618017, -0.175781);
+      var myOptions = {
+          zoom: 5,
+          center: latlng,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+      $scope.map = new google.maps.Map(document.getElementById("map"), myOptions); 
+      $scope.overlay = new google.maps.OverlayView();
+      $scope.overlay.draw = function() {}; // empty function required
+      $scope.overlay.setMap($scope.map);
+      $scope.element = document.getElementById("map");
+
+  }
+  self.createMap();
+}
+angular
+  .module("OceanTripApp")
   .controller("RegisterController", RegisterController);
 
 RegisterController.$inject = ["$auth", "$state", "$rootScope"];
@@ -106,7 +135,7 @@ function RegisterController($auth, $state, $rootScope) {
     })
     .then(function(){
       $rootScope.$broadcast("loggedIn");
-      $state.go("home");
+      $state.go("map");
     })
   }
 }
