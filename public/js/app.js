@@ -100,25 +100,18 @@ angular
   .module("OceanTripApp")
   .controller("MapController", MapController);
 
-RegisterController.$inject = ["$scope"];
-function MapController($scope) {
-  var self = $scope ;
+MapController.$inject = ["Sightings", "$rootScope"];
+function MapController(Sightings, $rootScope) {
+  var self = this;
 
-  self.createMap = function (){
-    var latlng = new google.maps.LatLng(51.618017, -0.175781);
-      var myOptions = {
-          zoom: 5,
-          center: latlng,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-      };
-      $scope.map = new google.maps.Map(document.getElementById("map"), myOptions); 
-      $scope.overlay = new google.maps.OverlayView();
-      $scope.overlay.draw = function() {}; // empty function required
-      $scope.overlay.setMap($scope.map);
-      $scope.element = document.getElementById("map");
+  this.markers = [];
 
-  }
-  self.createMap();
+  Sightings.query()
+    .then(function(data) {
+      self.markers = data;
+    });
+
+  this.center = { lat: 0, lng: 0 };
 }
 angular
   .module("OceanTripApp")
@@ -139,6 +132,55 @@ function RegisterController($auth, $state, $rootScope) {
     })
   }
 }
+angular
+  .module("OceanTripApp")
+  .directive('gMap', gMap);
+
+function gMap() {
+  return {
+    restrict: 'E',
+    replace: true,
+    template: '<div class="google-map"></div>',
+    scope: {
+      center: '=',
+      markers: '='
+    },
+    link: function(scope, element) {
+
+      var markers = [];
+
+      if(!scope.center) throw new Error('You must have a center for your g-map!');
+
+      var map = new google.maps.Map(element[0], {
+        center: scope.center,
+        zoom: 2
+      });
+
+      scope.$watch('markers.length', updateMarkers);
+
+      function updateMarkers() {
+        console.log(scope.markers);
+        markers.forEach(function(marker) {
+          marker.setMap(null);
+        });
+
+        markers = scope.markers.map(function(location) {
+          var marker = new google.maps.Marker({
+            position: { lat: location.latitude, lng: location.longitude },
+            map: map
+          });
+
+          marker.addListener('click', function() {
+            console.log(location);
+          });
+
+          return marker;
+        });
+      }
+
+    }
+  }
+}
 // angular
 //   .module("OceanTripApp")
 //   .factory("User", User);
@@ -151,3 +193,16 @@ function RegisterController($auth, $state, $rootScope) {
 //     register: {method : "POST", url: API_URL + "/register"},
 //   });
 // }
+angular
+  .module("OceanTripApp")
+  .service("Sightings", Sightings);
+
+Sightings.$inject = ["$http"];
+function Sightings($http) {
+  this.query = function() {
+    return $http.get("/api/sightings")
+      .then(function(res) {
+        return res.data;
+      });
+  }
+}
