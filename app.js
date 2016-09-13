@@ -15,6 +15,7 @@ var databaseUri = require('./config/db')(environment);
 
 mongoose.Promise = bluebird;
 mongoose.connect(databaseUri);
+mongoose.plugin(beautifulUnique);
 
 // app.get('/*', function(req, res, next){ 
 //   res.setHeader('Last-Modified', (new Date()).toUTCString());

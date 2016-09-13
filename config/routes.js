@@ -5,6 +5,7 @@ var facebookController = require('../controllers/facebookOauth');
 var twitterController = require('../controllers/twitterOauth');
 var sightingsController = require('../controllers/sightings');
 
+
 var router = require('express').Router();
 var jwt = require('jsonwebtoken');
 var secret = require('./tokens').secret;
@@ -30,5 +31,7 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 router.get('/sightings', sightingsController.index);
+
+
 
 module.exports = router;

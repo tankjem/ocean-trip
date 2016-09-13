@@ -100,15 +100,23 @@ angular
   .module("OceanTripApp")
   .controller("MapController", MapController);
 
-MapController.$inject = ["Sightings", "$rootScope"];
-function MapController(Sightings, $rootScope) {
+MapController.$inject = ["Sightings","Airports", "$rootScope"];
+function MapController(Sightings, Airports, $rootScope) {
   var self = this;
 
   this.markers = [];
+  this.airports = [];
+
+  Airports.query()
+    .then(function(data){
+      self.airports = data;
+      // console.log(data);
+    });
 
   Sightings.query()
     .then(function(data) {
       self.markers = data;
+      // console.log(data);
     });
 
   this.center = { lat: 0, lng: 0 };
@@ -143,30 +151,56 @@ function gMap() {
     template: '<div class="google-map"></div>',
     scope: {
       center: '=',
-      markers: '='
+      markers: '=',
+      airports: '='
     },
     link: function(scope, element) {
 
       var markers = [];
+      var airports = [];
 
       if(!scope.center) throw new Error('You must have a center for your g-map!');
 
       var map = new google.maps.Map(element[0], {
         center: scope.center,
         zoom: 2,
-        styles: [{"featureType":"landscape","stylers":[{"hue":"#FFA800"},{"saturation":0},{"lightness":0},{"gamma":1}]},{"featureType":"road.highway","stylers":[{"hue":"#53FF00"},{"saturation":-73},{"lightness":40},{"gamma":1}]},{"featureType":"road.arterial","stylers":[{"hue":"#FBFF00"},{"saturation":0},{"lightness":0},{"gamma":1}]},{"featureType":"road.local","stylers":[{"hue":"#00FFFD"},{"saturation":0},{"lightness":30},{"gamma":1}]},{"featureType":"water","stylers":[{"hue":"#00BFFF"},{"saturation":6},{"lightness":8},{"gamma":1}]},{"featureType":"poi","stylers":[{"hue":"#679714"},{"saturation":33.4},{"lightness":-25.4},{"gamma":1}]
-        }], disableDefaultUI: true
+        styles: [{"featureType":"water","elementType":"geometry","stylers":[{"hue":"#165c64"},{"saturation":34},{"lightness":-69},{"visibility":"on"}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"hue":"#b7caaa"},{"saturation":-14},{"lightness":-18},{"visibility":"on"}]},{"featureType":"landscape.man_made","elementType":"all","stylers":[{"hue":"#cbdac1"},{"saturation":-6},{"lightness":-9},{"visibility":"on"}]},{"featureType":"road","elementType":"geometry","stylers":[{"hue":"#8d9b83"},{"saturation":-89},{"lightness":-12},{"visibility":"on"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"hue":"#d4dad0"},{"saturation":-88},{"lightness":54},{"visibility":"simplified"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"hue":"#bdc5b6"},{"saturation":-89},{"lightness":-3},{"visibility":"simplified"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"hue":"#bdc5b6"},{"saturation":-89},{"lightness":-26},{"visibility":"on"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"hue":"#c17118"},{"saturation":61},{"lightness":-45},{"visibility":"on"}]},{"featureType":"poi.park","elementType":"all","stylers":[{"hue":"#8ba975"},{"saturation":-46},{"lightness":-28},{"visibility":"on"}]},{"featureType":"transit","elementType":"geometry","stylers":[{"hue":"#a43218"},{"saturation":74},{"lightness":-51},{"visibility":"simplified"}]},{"featureType":"administrative.province","elementType":"all","stylers":[{"hue":"#ffffff"},{"saturation":0},{"lightness":100},{"visibility":"simplified"}]},{"featureType":"administrative.neighborhood","elementType":"all","stylers":[{"hue":"#ffffff"},{"saturation":0},{"lightness":100},{"visibility":"off"}]},{"featureType":"administrative.locality","elementType":"labels","stylers":[{"hue":"#ffffff"},{"saturation":0},{"lightness":100},{"visibility":"off"}]},{"featureType":"administrative.land_parcel","elementType":"all","stylers":[{"hue":"#ffffff"},{"saturation":0},{"lightness":100},{"visibility":"off"}]},{"featureType":"administrative","elementType":"all","stylers":[{"hue":"#3a3935"},{"saturation":5},{"lightness":-57},{"visibility":"off"}]},{"featureType":"poi.medical","elementType":"geometry","stylers":[{"hue":"#cba923"},{"saturation":50},{"lightness":-46},{"visibility":"on"}]
+          }], disableDefaultUI: true
       });
 
       scope.$watch('markers.length', updateMarkers);
+      scope.$watch('airports.length', updateAirports);
+
+
+      function updateAirports(){
+        console.log(scope.airports);
+
+        airports.forEach(function(airports){
+          airport.setMap(null);
+        });
+
+        airports = scope.airports.airports.map(function(location){
+          // console.log(location);
+          var airport = new google.maps.Marker({
+            position: { lat: location.lat, lng: location.lng},
+            map: map,
+            icon: "http://ortambo-airport.com/images/map-icon-blue.svg"
+          });
+          airport.addListener('click', function(){
+            console.log(location);
+          });
+          return airports;
+        });
+      }
 
       function updateMarkers() {
         console.log(scope.markers);
         markers.forEach(function(marker) {
           marker.setMap(null);
         });
-
         markers = scope.markers.map(function(location) {
+            // console.log(location);
+
           var marker = new google.maps.Marker({
             position: { lat: location.latitude, lng: location.longitude },
             map: map
@@ -195,6 +229,19 @@ function gMap() {
 //     register: {method : "POST", url: API_URL + "/register"},
 //   });
 // }
+angular
+  .module("OceanTripApp")
+  .service("Airports", Airports);
+
+Airports.$inject = ["$http"];
+function Airports($http) {
+  this.query = function(){
+    return $http.get("https://airport.api.aero/airport?user_key=64012bc70e7cbbbe3ef239fadf379976")
+      .then(function(res){
+        return res.data;
+      });
+  }
+}
 angular
   .module("OceanTripApp")
   .service("Sightings", Sightings);
