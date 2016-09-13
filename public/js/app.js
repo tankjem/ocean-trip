@@ -100,23 +100,37 @@ angular
   .module("OceanTripApp")
   .controller("MapController", MapController);
 
-MapController.$inject = ["Sightings","Airports", "$rootScope"];
-function MapController(Sightings, Airports, $rootScope) {
+MapController.$inject = ["Sightings","Airports", "$rootScope", "$window"];
+function MapController(Sightings, Airports, $rootScope, $window) {
   var self = this;
 
   this.markers = [];
-  this.airports = [];
+  this.destination = {};
+  this.origin = {};
 
-  Airports.query()
-    .then(function(data){
-      self.airports = data;
-      // console.log(data);
-    });
+  window.navigator.geolocation.getCurrentPosition(function(position) {
+    var currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+
+    Airports.find(currentLocation)
+      .then(function(airport){
+        self.origin = airport;
+      });
+
+  });
+
+  $rootScope.$on('findAirports', function(e, location) {
+    Airports.find(location)
+      .then(function(airport){
+        self.destination = airport;
+      })
+      .then(function() {
+        // get fights from origin to destination
+      })
+  });
 
   Sightings.query()
     .then(function(data) {
       self.markers = data;
-      // console.log(data);
     });
 
   this.center = { lat: 0, lng: 0 };
@@ -144,7 +158,8 @@ angular
   .module("OceanTripApp")
   .directive('gMap', gMap);
 
-function gMap() {
+gMap.$inject = ['$rootScope'];
+function gMap($rootScope) {
   return {
     restrict: 'E',
     replace: true,
@@ -152,12 +167,12 @@ function gMap() {
     scope: {
       center: '=',
       markers: '=',
-      airports: '='
+      destination: '='
     },
     link: function(scope, element) {
 
       var markers = [];
-      var airports = [];
+      var airportMarker = null;
 
       if(!scope.center) throw new Error('You must have a center for your g-map!');
 
@@ -169,32 +184,25 @@ function gMap() {
       });
 
       scope.$watch('markers.length', updateMarkers);
-      scope.$watch('airports.length', updateAirports);
+      scope.$watch('destination.code', updateAirport);
 
 
-      function updateAirports(){
-        console.log(scope.airports);
+      function updateAirport(){
+        if(airportMarker) {
+          airportMarker.setMap(null);
+        }
 
-        airports.forEach(function(airports){
-          airport.setMap(null);
-        });
-
-        airports = scope.airports.airports.map(function(location){
-          // console.log(location);
-          var airport = new google.maps.Marker({
-            position: { lat: location.lat, lng: location.lng},
+        if(scope.destination.code) {
+          airportMarker = new google.maps.Marker({
+            position: { lat: scope.destination.lat, lng: scope.destination.lng},
             map: map,
             icon: "http://ortambo-airport.com/images/map-icon-blue.svg"
           });
-          airport.addListener('click', function(){
-            console.log(location);
-          });
-          return airports;
-        });
+        }
       }
 
       function updateMarkers() {
-        console.log(scope.markers);
+        // console.log(scope.markers);
         markers.forEach(function(marker) {
           marker.setMap(null);
         });
@@ -203,11 +211,12 @@ function gMap() {
 
           var marker = new google.maps.Marker({
             position: { lat: location.latitude, lng: location.longitude },
-            map: map
+            map: map,
+            icon: "http://iconizer.net/files/IconSweets_2/orig/whale.png"
           });
 
           marker.addListener('click', function() {
-            console.log(location);
+            $rootScope.$broadcast("findAirports", { lat: location.latitude, lng: location.longitude });
           });
 
           return marker;
@@ -235,11 +244,24 @@ angular
 
 Airports.$inject = ["$http"];
 function Airports($http) {
-  this.query = function(){
-    return $http.get("https://airport.api.aero/airport?user_key=64012bc70e7cbbbe3ef239fadf379976")
+  this.find = function(location){
+    return $http.get("https://airport.api.aero/airport/nearest/" + location.lat + "/" + location.lng + "?user_key=64012bc70e7cbbbe3ef239fadf379976")
       .then(function(res){
-        return res.data;
+        return res.data.airports[0];
       });
+  }
+}
+angular  
+  .module("OceanTripApp")
+  .service("Flights", Flights);
+
+Flights.$inject = ["$http"];
+function Flights($http) {
+  this.query = function(origin, destination){
+    return $http.get("/api/flights?origin=" + origin + "&destination=" + destination)
+    .then(function(res){
+      return res.data;
+    });
   }
 }
 angular
