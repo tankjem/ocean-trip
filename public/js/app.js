@@ -107,7 +107,7 @@ function MapController(Sightings, Airports, Flights, $rootScope, $window) {
   this.markers = [];
   this.destination = {};
   this.origin = {};
-  this.trip = {};
+  this.trips = {};
 
   // window.navigator.geolocation.getCurrentPosition(function(position) {
   //   var currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
@@ -126,9 +126,8 @@ function MapController(Sightings, Airports, Flights, $rootScope, $window) {
 
         Flights.query(self.origin.code, self.destination.code)
           .then(function(data) {
-          // get fights from origin to destination
-            // self.trip = data;
-            console.log(data);
+            self.trips = data;
+            console.log("trips", data);
         });
 
       });
@@ -173,7 +172,8 @@ function gMap($rootScope) {
     scope: {
       center: '=',
       markers: '=',
-      destination: '='
+      destination: '=',
+      trips: '='
     },
     link: function(scope, element) {
 
@@ -191,19 +191,36 @@ function gMap($rootScope) {
 
       scope.$watch('markers.length', updateMarkers);
       scope.$watch('destination.code', updateAirport);
+      // scope.$watch('trips.length', infoWindow);
 
+      var markerclusterer = new MarkerClusterer(map, [], {
+
+        minimumClusterSize: 5
+      });
+      console.log(markerclusterer);
+
+      // function infoWindow(){
+        var contentString = 
+        '<div id="content">'+
+        '<div id="siteNotice">'+
+        '</div>'+
+        '<h1 id="firstHeading" class="firstHeading">Is this working</h1>'+
+        '<div id="bodyContent">'+
+        '<p>'+ scope.trips +'</p>'+
+        '<p>WHALES!!!!!!</p>'+
+        '</div>'+
+        '</div>';
+
+          var infowindow = new google.maps.InfoWindow({
+            content: contentString
+          });
+
+      // }
 
       function updateAirport(){
         if(airportMarker) {
           airportMarker.setMap(null);
         }
-        // if(scope.origin.code){
-        //   airportMarker = new google.maps.Marker({
-        //     position: { lat: scope.origin.lat, lng: scope.origin.lng},
-        //     map: map,
-        //     icon:"http://ortambo-airport.com/images/map-icon-blue.svg"
-        //   });
-        // }
         if(scope.destination.code) {
           airportMarker = new google.maps.Marker({
             position: { lat: scope.destination.lat, lng: scope.destination.lng},
@@ -226,10 +243,15 @@ function gMap($rootScope) {
             map: map,
             icon: "http://iconizer.net/files/IconSweets_2/orig/whale.png"
           });
+          
 
           marker.addListener('click', function() {
             $rootScope.$broadcast("findAirports", { lat: location.latitude, lng: location.longitude });
+            infowindow.open(map, marker);
           });
+          markerclusterer.addMarker(marker);
+          // console.log(marker);
+          // console.log(markerclusterer);
 
           return marker;
         });
