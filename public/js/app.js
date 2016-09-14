@@ -106,44 +106,17 @@ function MapController(Sightings, Airports, Flights, $rootScope, $window) {
 
   this.markers = [];
   this.destination = {};
-  this.origin = {};
-  this.trips = {};
-  // self.minPrice;
-  // self.arrival;
-  // self.departure;
-  // self.priceUpdatedAt;
-
-  // window.navigator.geolocation.getCurrentPosition(function(position) {
-  //   var currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
-
-  //   Airports.find(currentLocation)
-  //     .then(function(airport){
-  //       self.origin = airport;
-  //     });
-
-  // });
+  this.flights = [];
 
   $rootScope.$on('findAirports', function(e, location) {
     Airports.find(location)
       .then(function(airport){
         self.destination = airport;
 
-        Flights.query(self.origin.code, self.destination.code)
+        Flights.query(self.destination.code)
           .then(function(data) {
-            self.trips = data;
-            for (var i = 0; i < self.trips.length; i++) {
-              self.minPrice = data[i].MinPrice
-              self.arrival = data[i].OutboundLeg.Destination
-              self.departure = data[i].InboundLeg.Destination
-              self.priceUpdatedAt = data[i].QuoteDateTime
-              console.log(self.minPrice);
-              console.log(self.arrival);
-              console.log(self.departure);
-              console.log(self.priceUpdatedAt);
-            }
-            console.log("trips", data);
-            // return data;
-        });
+            self.flights = data;
+          });
 
       });
   });
@@ -188,12 +161,14 @@ function gMap($rootScope) {
       center: '=',
       markers: '=',
       destination: '=',
-      trips: '='
+      flights: '='
     },
     link: function(scope, element) {
       var markers = [];
-      // var trips = [];
       var airportMarker = null;
+      var selectedMarker = null;
+
+      var infoWindow = new google.maps.InfoWindow();
 
       if(!scope.center) throw new Error('You must have a center for your g-map!');
 
@@ -204,35 +179,24 @@ function gMap($rootScope) {
           }], disableDefaultUI: true
       });
 
-      scope.$watch('markers.length', updateMarkers);
+      scope.$watchCollection('flights', openInfoWindow);
+
+      function openInfoWindow() {
+        if(scope.flights.length > 0) {
+          var contentString = "<h4>" + scope.flights[0].OutboundLeg.Destination.CityName + "</h4>";
+
+          infoWindow.setContent(contentString);
+          infoWindow.open(map, selectedMarker);
+        }
+      }
+
+      scope.$watchCollection('markers', updateMarkers);
       scope.$watch('destination.code', updateAirport);
       // scope.$watch('trips.length');
 
       var markerclusterer = new MarkerClusterer(map, [], {
-
         minimumClusterSize: 5
       });
-      console.log(markerclusterer);
-
-
-      var contentString = 
-      '<div id="content">'+
-      '<div id="siteNotice">'+
-      '</div>'+
-      '<h1 id="firstHeading" class="firstHeading">Whale of a Trip</h1>'+
-      '<div id="bodyContent">'+
-      '<p>PRICES</p>'+
-      '<p>Outbound Flight</p>'+
-      '<p>Inbound Flight</p>'+
-      '<p>'+ scope.trips +'</p>'+
-      '<p>'+ scope.trips.arrival +'</p>'+
-      '<p>WHALES!!!!!!</p>'+
-      '</div>'+
-      '</div>';
-
-        var infowindow = new google.maps.InfoWindow({
-          content: contentString
-        });
 
       function updateAirport(){
         if(airportMarker) {
@@ -252,6 +216,7 @@ function gMap($rootScope) {
         markers.forEach(function(marker) {
           marker.setMap(null);
         });
+
         markers = scope.markers.map(function(location) {
             // console.log(location);
 
@@ -260,19 +225,13 @@ function gMap($rootScope) {
             map: map,
             icon: "http://iconizer.net/files/IconSweets_2/orig/whale.png"
           });
-          
 
           marker.addListener('click', function() {
             $rootScope.$broadcast("findAirports", { lat: location.latitude, lng: location.longitude });
-
-            // console.log("Heres the trips", scope.trips);
-            infowindow.open(map, marker);
-            // console.log(trips);
+            selectedMarker = this;
           });
-          markerclusterer.addMarker(marker);
 
-          // console.log(marker);
-          // console.log(markerclusterer);
+          markerclusterer.addMarker(marker);
 
           return marker;
         });
@@ -312,11 +271,11 @@ angular
 
 Flights.$inject = ["$http"];
 function Flights($http) {
-  this.query = function(origin, destination){
-    return $http.get("/api/flights?origin=" + origin + "&destination=" + destination)
+  this.query = function(destination){
+    return $http.get("/api/flights?destination=" + destination)
     .then(function(res){
       return res.data;
-      console.log(res.data);
+      // console.log(res.data);
     });
   }
 }
