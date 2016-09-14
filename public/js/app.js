@@ -108,6 +108,10 @@ function MapController(Sightings, Airports, Flights, $rootScope, $window) {
   this.destination = {};
   this.origin = {};
   this.trips = {};
+  // self.minPrice;
+  // self.arrival;
+  // self.departure;
+  // self.priceUpdatedAt;
 
   // window.navigator.geolocation.getCurrentPosition(function(position) {
   //   var currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
@@ -137,7 +141,8 @@ function MapController(Sightings, Airports, Flights, $rootScope, $window) {
               console.log(self.departure);
               console.log(self.priceUpdatedAt);
             }
-            console.log("trips", data[0]);
+            console.log("trips", data);
+            // return data;
         });
 
       });
@@ -186,7 +191,6 @@ function gMap($rootScope) {
       trips: '='
     },
     link: function(scope, element) {
-
       var markers = [];
       // var trips = [];
       var airportMarker = null;
@@ -202,7 +206,7 @@ function gMap($rootScope) {
 
       scope.$watch('markers.length', updateMarkers);
       scope.$watch('destination.code', updateAirport);
-      scope.$watch('trips.length');
+      // scope.$watch('trips.length');
 
       var markerclusterer = new MarkerClusterer(map, [], {
 
@@ -215,13 +219,13 @@ function gMap($rootScope) {
       '<div id="content">'+
       '<div id="siteNotice">'+
       '</div>'+
-      '<h1 id="firstHeading" class="firstHeading">Is this working</h1>'+
+      '<h1 id="firstHeading" class="firstHeading">Whale of a Trip</h1>'+
       '<div id="bodyContent">'+
       '<p>PRICES</p>'+
       '<p>Outbound Flight</p>'+
       '<p>Inbound Flight</p>'+
-      '<p>'+ scope.trips.minPrice +'</p>'+
       '<p>'+ scope.trips +'</p>'+
+      '<p>'+ scope.trips.arrival +'</p>'+
       '<p>WHALES!!!!!!</p>'+
       '</div>'+
       '</div>';
@@ -260,10 +264,13 @@ function gMap($rootScope) {
 
           marker.addListener('click', function() {
             $rootScope.$broadcast("findAirports", { lat: location.latitude, lng: location.longitude });
+
+            // console.log("Heres the trips", scope.trips);
             infowindow.open(map, marker);
             // console.log(trips);
           });
           markerclusterer.addMarker(marker);
+
           // console.log(marker);
           // console.log(markerclusterer);
 
