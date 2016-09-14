@@ -35,7 +35,7 @@ function flightsIndex(req,res){
       delete quote.InboundLeg.CarrierIds;
       delete quote.InboundLeg.OriginId;
       delete quote.InboundLeg.DestinationId;
-
+      
       return quote;
     });
     res.status(200).json(quotes);

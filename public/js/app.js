@@ -127,7 +127,17 @@ function MapController(Sightings, Airports, Flights, $rootScope, $window) {
         Flights.query(self.origin.code, self.destination.code)
           .then(function(data) {
             self.trips = data;
-            console.log("trips", data);
+            for (var i = 0; i < self.trips.length; i++) {
+              self.minPrice = data[i].MinPrice
+              self.arrival = data[i].OutboundLeg.Destination
+              self.departure = data[i].InboundLeg.Destination
+              self.priceUpdatedAt = data[i].QuoteDateTime
+              console.log(self.minPrice);
+              console.log(self.arrival);
+              console.log(self.departure);
+              console.log(self.priceUpdatedAt);
+            }
+            console.log("trips", data[0]);
         });
 
       });
@@ -178,6 +188,7 @@ function gMap($rootScope) {
     link: function(scope, element) {
 
       var markers = [];
+      // var trips = [];
       var airportMarker = null;
 
       if(!scope.center) throw new Error('You must have a center for your g-map!');
@@ -191,7 +202,7 @@ function gMap($rootScope) {
 
       scope.$watch('markers.length', updateMarkers);
       scope.$watch('destination.code', updateAirport);
-      // scope.$watch('trips.length', infoWindow);
+      scope.$watch('trips.length');
 
       var markerclusterer = new MarkerClusterer(map, [], {
 
@@ -199,23 +210,25 @@ function gMap($rootScope) {
       });
       console.log(markerclusterer);
 
-      // function infoWindow(){
-        var contentString = 
-        '<div id="content">'+
-        '<div id="siteNotice">'+
-        '</div>'+
-        '<h1 id="firstHeading" class="firstHeading">Is this working</h1>'+
-        '<div id="bodyContent">'+
-        '<p>'+ scope.trips +'</p>'+
-        '<p>WHALES!!!!!!</p>'+
-        '</div>'+
-        '</div>';
 
-          var infowindow = new google.maps.InfoWindow({
-            content: contentString
-          });
+      var contentString = 
+      '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<h1 id="firstHeading" class="firstHeading">Is this working</h1>'+
+      '<div id="bodyContent">'+
+      '<p>PRICES</p>'+
+      '<p>Outbound Flight</p>'+
+      '<p>Inbound Flight</p>'+
+      '<p>'+ scope.trips.minPrice +'</p>'+
+      '<p>'+ scope.trips +'</p>'+
+      '<p>WHALES!!!!!!</p>'+
+      '</div>'+
+      '</div>';
 
-      // }
+        var infowindow = new google.maps.InfoWindow({
+          content: contentString
+        });
 
       function updateAirport(){
         if(airportMarker) {
@@ -248,6 +261,7 @@ function gMap($rootScope) {
           marker.addListener('click', function() {
             $rootScope.$broadcast("findAirports", { lat: location.latitude, lng: location.longitude });
             infowindow.open(map, marker);
+            // console.log(trips);
           });
           markerclusterer.addMarker(marker);
           // console.log(marker);
@@ -295,7 +309,7 @@ function Flights($http) {
     return $http.get("/api/flights?origin=" + origin + "&destination=" + destination)
     .then(function(res){
       return res.data;
-      // console.log(res.data);
+      console.log(res.data);
     });
   }
 }

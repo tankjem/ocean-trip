@@ -91,3 +91,8 @@ form {
   height: 85%;
   margin: 0;
   padding: 0; }
+
+#firstHeading {
+  color: black;
+  font-family: 'Raleway', sans-serif;
+  font-size: 25px; }
