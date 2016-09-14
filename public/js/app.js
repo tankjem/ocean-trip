@@ -100,32 +100,38 @@ angular
   .module("OceanTripApp")
   .controller("MapController", MapController);
 
-MapController.$inject = ["Sightings","Airports", "$rootScope", "$window"];
-function MapController(Sightings, Airports, $rootScope, $window) {
+MapController.$inject = ["Sightings", "Airports", "Flights", "$rootScope", "$window"];
+function MapController(Sightings, Airports, Flights, $rootScope, $window) {
   var self = this;
 
   this.markers = [];
   this.destination = {};
   this.origin = {};
+  this.trip = {};
 
-  window.navigator.geolocation.getCurrentPosition(function(position) {
-    var currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+  // window.navigator.geolocation.getCurrentPosition(function(position) {
+  //   var currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
 
-    Airports.find(currentLocation)
-      .then(function(airport){
-        self.origin = airport;
-      });
+  //   Airports.find(currentLocation)
+  //     .then(function(airport){
+  //       self.origin = airport;
+  //     });
 
-  });
+  // });
 
   $rootScope.$on('findAirports', function(e, location) {
     Airports.find(location)
       .then(function(airport){
         self.destination = airport;
-      })
-      .then(function() {
-        // get fights from origin to destination
-      })
+
+        Flights.query(self.origin.code, self.destination.code)
+          .then(function(data) {
+          // get fights from origin to destination
+            // self.trip = data;
+            console.log(data);
+        });
+
+      });
   });
 
   Sightings.query()
@@ -191,7 +197,13 @@ function gMap($rootScope) {
         if(airportMarker) {
           airportMarker.setMap(null);
         }
-
+        // if(scope.origin.code){
+        //   airportMarker = new google.maps.Marker({
+        //     position: { lat: scope.origin.lat, lng: scope.origin.lng},
+        //     map: map,
+        //     icon:"http://ortambo-airport.com/images/map-icon-blue.svg"
+        //   });
+        // }
         if(scope.destination.code) {
           airportMarker = new google.maps.Marker({
             position: { lat: scope.destination.lat, lng: scope.destination.lng},
@@ -261,6 +273,7 @@ function Flights($http) {
     return $http.get("/api/flights?origin=" + origin + "&destination=" + destination)
     .then(function(res){
       return res.data;
+      // console.log(res.data);
     });
   }
 }

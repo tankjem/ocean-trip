@@ -2,7 +2,7 @@ var request = require('request-promise');
 
 function flightsIndex(req,res){
   request.get({
-    url: "http://partners.api.skyscanner.net/apiservices/browseroutes/v1.0/GB/GBP/en-GB/" + req.query.origin + "/" + req.query.destination + "/anytime/anytime?apiKey=ge682354248198312882798730921087",
+    url: "http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/GB/GBP/en-GB/UK/" + req.query.destination + "/anytime/anytime?apiKey=" + process.env.SKYSCANNER_API_KEY,
     json: true
   })
   .then(function(data){
