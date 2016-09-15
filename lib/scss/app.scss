@@ -191,11 +191,12 @@ main:after{
   background-color: white;
   color: black;
   height: 500px;
-  width: 500px;
+  width: 700px;
   overflow: scroll;
   left: 50%;
   position: relative;
-  margin-left:-250px;
+  margin-left:-350px;
+  padding: 5px;
 }
 .tweet {
   padding: 5px;
