@@ -170,3 +170,19 @@ p{
 .container {
   font-size: 18px;
 }
+main{
+  min-height: 100%;
+    /* equal to footer height */
+  margin-bottom: -85px; 
+}
+main:after{
+  content: "";
+  display: block;
+}
+
+.footer, main:after{
+  height: 85px;
+}
+.footer{
+  color: white;
+}

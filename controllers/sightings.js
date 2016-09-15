@@ -3,7 +3,7 @@ var request = require('request-promise');
 function sightingsIndex(req, res) {
 
   request.get({
-    url: "http://hotline.whalemuseum.org/api.json?limit=800",
+    url: "http://hotline.whalemuseum.org/api.json?limit=1000",
     json: true
   })
   .then(function(data) {

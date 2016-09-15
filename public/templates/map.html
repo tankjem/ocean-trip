@@ -1,11 +1,11 @@
 <g-map class="animated slideInDown" center="map.center" markers="map.markers" destination="map.destination" flights="map.flights"></g-map>
 <!-- <div class="container"> -->
 <div class="animated slideInLeft" id="flightInfo" ng-if="map.flights" ng-repeat="flights in map.flights|limitTo:1">
-<h1 id="firstHeading">Ocean Flights</h1>
+<h1 id="firstHeading">Flight to see whale</h1>
 <hr>
 <h5>Outbound Leg</h5>
 <h6>Origin: {{flights.OutboundLeg.Origin.CityName}}</h6>
-<h6>Destination: {{fights.OutboundLeg.Destination.CityName}}</h6>
+<h6>Destination: {{flights.OutboundLeg.Destination.CityName}}</h6>
 <small>Departure Time: {{flights.OutboundLeg.DepartureDate}}</small>
 <h5>Return Flight</h5>
 <h6>Destination: {{flights.InboundLeg.Destination.CityName}}</h6>
