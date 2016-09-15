@@ -1,1 +1,19 @@
 <g-map center="map.center" markers="map.markers" destination="map.destination" flights="map.flights"></g-map>
+<!-- <div class="container"> -->
+<div id="flightInfo" ng-if="map.flights" ng-repeat="flights in map.flights|limitTo:1">
+<h1 id="firstHeading">Ocean Flights</h1>
+<hr>
+<h5>Outbound Leg</h5>
+<h6>Origin: {{flights.OutboundLeg.Origin.CityName}}</h6>
+<h6>Destination: {{fights.OutboundLeg.Destination.CityName}}</h6>
+<small>Departure Time: {{flights.OutboundLeg.DepartureDate}}</small>
+<h5>Return Flight</h5>
+<h6>Destination: {{flights.InboundLeg.Destination.CityName}}</h6>
+<h6>Origin: {{flights.InboundLeg.Origin.CityName}}</h6>
+<small>Departure Time: {{flights.InboundLeg.DepartureDate}}</small>
+<br>
+<h5 id="price">Price: £{{flights.MinPrice}}</h5>
+<hr>
+<button type="button" ng-click="map.deselectFlight()">Close</button>
+</div>
+<!-- </div> -->

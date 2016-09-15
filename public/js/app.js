@@ -115,6 +115,11 @@ function MapController(Sightings, Airports, Flights, $rootScope, $window) {
   this.markers = [];
   this.destination = {};
   this.flights = [];
+  // this.selectedFlight = null;
+
+  this.deselectFlight = function() {
+    this.flights = [];
+  }
 
   $rootScope.$on('findAirports', function(e, location) {
     Airports.find(location)
@@ -135,7 +140,7 @@ function MapController(Sightings, Airports, Flights, $rootScope, $window) {
       self.markers = data;
     });
 
-  this.center = { lat: 0, lng: 0 };
+  this.center = { lat: 36.518466, lng: -100.898438 };
 }
 angular
   .module("OceanTripApp")
@@ -177,13 +182,15 @@ function gMap($rootScope) {
       var airportMarker = null;
       var selectedMarker = null;
 
-      var infoWindow = new google.maps.InfoWindow();
+      var infoWindow = new google.maps.InfoWindow({disableAutoPan:true});
 
       if(!scope.center) throw new Error('You must have a center for your g-map!');
 
       var map = new google.maps.Map(element[0], {
         center: scope.center,
-        zoom: 2,
+        zoom: 3,
+        minZoom: 2,
+        maxZoom: 24,
         styles: [{"featureType":"water","elementType":"geometry","stylers":[{"hue":"#165c64"},{"saturation":34},{"lightness":-69},{"visibility":"on"}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"hue":"#b7caaa"},{"saturation":-14},{"lightness":-18},{"visibility":"on"}]},{"featureType":"landscape.man_made","elementType":"all","stylers":[{"hue":"#cbdac1"},{"saturation":-6},{"lightness":-9},{"visibility":"on"}]},{"featureType":"road","elementType":"geometry","stylers":[{"hue":"#8d9b83"},{"saturation":-89},{"lightness":-12},{"visibility":"on"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"hue":"#d4dad0"},{"saturation":-88},{"lightness":54},{"visibility":"simplified"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"hue":"#bdc5b6"},{"saturation":-89},{"lightness":-3},{"visibility":"simplified"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"hue":"#bdc5b6"},{"saturation":-89},{"lightness":-26},{"visibility":"on"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"hue":"#c17118"},{"saturation":61},{"lightness":-45},{"visibility":"on"}]},{"featureType":"poi.park","elementType":"all","stylers":[{"hue":"#8ba975"},{"saturation":-46},{"lightness":-28},{"visibility":"on"}]},{"featureType":"transit","elementType":"geometry","stylers":[{"hue":"#a43218"},{"saturation":74},{"lightness":-51},{"visibility":"simplified"}]},{"featureType":"administrative.province","elementType":"all","stylers":[{"hue":"#ffffff"},{"saturation":0},{"lightness":100},{"visibility":"simplified"}]},{"featureType":"administrative.neighborhood","elementType":"all","stylers":[{"hue":"#ffffff"},{"saturation":0},{"lightness":100},{"visibility":"off"}]},{"featureType":"administrative.locality","elementType":"labels","stylers":[{"hue":"#ffffff"},{"saturation":0},{"lightness":100},{"visibility":"off"}]},{"featureType":"administrative.land_parcel","elementType":"all","stylers":[{"hue":"#ffffff"},{"saturation":0},{"lightness":100},{"visibility":"off"}]},{"featureType":"administrative","elementType":"all","stylers":[{"hue":"#3a3935"},{"saturation":5},{"lightness":-57},{"visibility":"off"}]},{"featureType":"poi.medical","elementType":"geometry","stylers":[{"hue":"#cba923"},{"saturation":50},{"lightness":-46},{"visibility":"on"}]
           }], disableDefaultUI: true
       });
@@ -195,20 +202,12 @@ function gMap($rootScope) {
           var contentString =
           "<div id='infoWindow'>" +
           "<h1 id='firstHeading'>Whale Sighting</h1>"+
-          "<h6>" +scope.markers[0].species +"</h6>" +
-          "<p>" +scope.markers[0].location +"</p>" +
-          "<p>" + scope.markers[0].description +"</p>" +
-          "<small> Sighted At: " +scope.markers[0].sighted_at +"</small>" +
+          "<h6>" +selectedMarker.location.species +"</h6>" +
+          "<p>" +selectedMarker.location.location +"</p>" +
+          "<p>" + selectedMarker.location.description +"</p>" +
+          "<small> Sighted At: " +selectedMarker.location.sighted_at +"</small>" +
           "<br>" +
-          "<h1 id='firstHeading'>Ocean Flights</h1>"+
-          "<h5>Outbound Leg</h4>"+
-          "<h6>Origin: "+ scope.flights[0].OutboundLeg.Origin.CityName +"</h6>"+
-          "<h6>Destination: "+ scope.flights[0].OutboundLeg.Destination.CityName + "</h6>"+
-          "<small>Departure Time: "+ scope.flights[0].OutboundLeg.DepartureDate +"</small>" +
-          "<h5>Return Flight</h5>" +
-          "<h6>Destination: "+ scope.flights[0].InboundLeg.Destination.CityName + "<h5>" +
-          "<h6>Origin: "+ scope.flights[0].InboundLeg.Origin.CityName + "</h6>" +
-          "<small>Departure Time: "+ scope.flights[0].InboundLeg.DepartureDate +"</small>"+
+          "<br>" +
           "</div>";
 
           infoWindow.setContent(contentString);
@@ -243,25 +242,29 @@ function gMap($rootScope) {
           marker.setMap(null);
         });
 
-        markers = scope.markers.map(function(location) {
-            // console.log(location);
+        scope.markers.forEach(function(location) {
+            // console.log(scope.location);
+          if(location.latitude != 0 && location.longitude != 0 ) {
+            var marker = new google.maps.Marker({
+              position: { lat: location.latitude, lng: location.longitude },
+              map: map,
+              icon: "http://iconizer.net/files/IconSweets_2/orig/whale.png",
+              location: location
+            });
+            marker.addListener('click', function() {
+              console.log(location);
+              $rootScope.$broadcast("findAirports", { lat: location.latitude, lng: location.longitude });
+              selectedMarker = this;
 
-          var marker = new google.maps.Marker({
-            position: { lat: location.latitude, lng: location.longitude },
-            map: map,
-            icon: "http://iconizer.net/files/IconSweets_2/orig/whale.png"
-          });
+            });
+            markerclusterer.addMarker(marker);
 
-          marker.addListener('click', function() {
-            console.log(location);
-            $rootScope.$broadcast("findAirports", { lat: location.latitude, lng: location.longitude });
-            selectedMarker = this;
+            markers.push(marker);
+          }
 
-          });
+          // markerclusterer.addMarker(marker);
 
-          markerclusterer.addMarker(marker);
-
-          return marker;
+          // return marker;
         });
       }
 
@@ -303,7 +306,6 @@ function Flights($http) {
     return $http.get("/api/flights?destination=" + destination)
     .then(function(res){
       return res.data;
-      // console.log(res.data);
     });
   }
 }
