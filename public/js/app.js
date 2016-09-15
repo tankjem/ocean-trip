@@ -77,8 +77,7 @@ function LiveSightingsController($window){
 
   socket.on("tweets", function(tweet){
     $('#tweets-stream').prepend('<div class="tweet"><img src="' + tweet.user_profile_image + '" class="avatar pull-left"/><div class="names"><span class="full-name">' + tweet.name + ' </span></div><div class="contents"><span class="text">' + tweet.text + '</span></div></div>');
-       
-       // console.log(tweet.text);
+
   });
 
 }
@@ -154,7 +153,7 @@ function MapController(Sightings, Airports, Flights, $rootScope, $window) {
         Flights.query(self.destination.code)
           .then(function(data) {
             self.flights = data;
-            console.log(data);
+            // console.log(data);
           });
 
       });
@@ -277,7 +276,7 @@ function gMap($rootScope) {
               location: location
             });
             marker.addListener('click', function() {
-              console.log(location);
+              // console.log(location);
               $rootScope.$broadcast("findAirports", { lat: location.latitude, lng: location.longitude });
               selectedMarker = this;
 
@@ -315,10 +314,15 @@ angular
 Airports.$inject = ["$http"];
 function Airports($http) {
   this.find = function(location){
-    return $http.get("https://airport.api.aero/airport/nearest/" + location.lat + "/" + location.lng + "?user_key=64012bc70e7cbbbe3ef239fadf379976")
-      .then(function(res){
-        return res.data.airports[0];
-      });
+    console.log(location);
+    return $http({
+      url: '/api/airports',
+      params: { lat: location.lat, lng: location.lng }
+    })
+    .then(function(res){
+      console.log(res);
+      return res.data.airports[0];
+    });
   }
 }
 angular  

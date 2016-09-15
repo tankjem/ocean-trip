@@ -11,8 +11,6 @@ nav {
   font-size: 1.5rem;
   font-weight: 600;
   font-family: 'Indie Flower', cursive;
-  // font-family: 'Amatic SC', cursive;
-  // font-weight: 700;
 } 
 ul.nav {
   float: right;
@@ -20,11 +18,6 @@ ul.nav {
 ul.nav:hover {
   cursor: pointer;
 }
-// html {
-//   height: 100%;
-//   padding: 0;
-//   margin: 0;
-// }
 
 body  {
   width: 100%;
@@ -144,6 +137,7 @@ form {
   font-family: 'Raleway', sans-serif;
   color: white;
   padding: 5px;
+  width: 300px;
   background-color: black;
   border: 1px solid black;
   z-index: 1000; 

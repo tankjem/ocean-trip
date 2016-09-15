@@ -5,6 +5,7 @@ var facebookController = require('../controllers/facebookOauth');
 var twitterController = require('../controllers/twitterOauth');
 var sightingsController = require('../controllers/sightings');
 var flightsController = require('../controllers/flights');
+var airportsController = require('../controllers/airports');
 
 
 var router = require('express').Router();
@@ -33,6 +34,7 @@ router.post('/login', authController.login);
 
 router.get('/sightings', sightingsController.index);
 router.get('/flights', flightsController.index);
+router.get('/airports', airportsController.index);
 
 
 

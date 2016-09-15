@@ -125,6 +125,7 @@ form {
   font-family: 'Raleway', sans-serif;
   color: white;
   padding: 5px;
+  width: 300px;
   background-color: black;
   border: 1px solid black;
   z-index: 1000; }
