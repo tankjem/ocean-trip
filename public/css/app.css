@@ -130,12 +130,12 @@ form {
   z-index: 1000; }
 
 #flightInfo {
-  width: 25%;
-  height: 100%;
+  width: 250px;
+  height: 500px;
   float: left;
+  margin-top: 5%;
   position: relative;
   background-color: black;
-  margin-top: 80px;
   border-radius: 5px;
   border: 1px solid white; }
 
