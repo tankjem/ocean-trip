@@ -22,10 +22,16 @@
         <a class="nav-link" ui-sref="login">Login</a>
         </li>
         <li ng-if="main.currentUser" class="nav-item" ui-sref-active="active">
+          <a class="nav-link" ui-sref="home">Home</a>
+        </li>
+        <li ng-if="main.currentUser" class="nav-item" ui-sref-active="active">
           <a class="nav-link" ui-sref="map">Map</a>
         </li>
+        <li ng-if="main.currentUser" class="nav-item" ui-sref-active="active">
+          <a class="nav-link" ui-sref="about">About</a>
+        </li>
         <li ng-if="main.currentUser" ng-click="main.logout()" class="nav-item">
-          <a class="nav-link" ui-sref="home">Logout</a>
+          <a class="nav-link" ui-sref="landing">Logout</a>
         </li>
       </ul>
     </nav>

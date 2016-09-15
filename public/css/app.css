@@ -87,12 +87,21 @@ form {
 
 .google-map {
   position: absolute;
-  width: 85%;
-  height: 85%;
+  width: 90%;
+  height: 88%;
   margin: 0;
-  padding: 0; }
+  padding: 0;
+  z-index: 100; }
 
 #firstHeading {
-  color: black;
+  color: white;
   font-family: 'Raleway', sans-serif;
-  font-size: 25px; }
+  font-size: 22px;
+  font-weight: 900;
+  text-decoration: underline; }
+
+#infoWindow {
+  font-family: 'Raleway', sans-serif;
+  color: white;
+  background-color: black;
+  border: 1px solid black; }

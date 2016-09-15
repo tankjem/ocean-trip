@@ -26,10 +26,14 @@ function oAuthConfig($authProvider) {
 Router.$inject = ['$stateProvider', '$urlRouterProvider'];
 function Router($stateProvider, $urlRouterProvider) {
   $stateProvider
-    .state('home', {
+    .state('landing', {
       url: '/',
-      templateUrl:'/templates/home.html',
+      templateUrl:'/templates/landing.html',
       controller: "LoginController as login"
+    })
+    .state('home', {
+      url:'/home',
+      templateUrl: 'templates/home.html',
     })
     .state('register', {
       url:'/register',
@@ -45,6 +49,10 @@ function Router($stateProvider, $urlRouterProvider) {
       url: '/map',
       templateUrl: 'templates/map.html',
       controller: "MapController as map"
+    })
+    .state('about', {
+      url: '/about',
+      templateUrl: 'templates/about.html'
     });
     
     $urlRouterProvider.otherwise('/');
@@ -62,7 +70,7 @@ function LoginController($auth, $state, $rootScope) {
     $auth.authenticate(provider)
       .then(function() {
         $rootScope.$broadcast("loggedIn");
-        $state.go("map");
+        $state.go("home");
       });
   }
 
@@ -71,7 +79,7 @@ function LoginController($auth, $state, $rootScope) {
       url: "/api/login"
     }).then(function(){
         $rootScope.$broadcast("loggedIn");
-        $state.go('map');
+        $state.go('home');
     });
   }
 }
@@ -89,7 +97,7 @@ function MainController($auth, $state, $rootScope) {
   this.logout = function() {
     $auth.logout();
     this.currentUser = null;
-    $state.go("home");
+    $state.go("landing");
   }
 
   $rootScope.$on("loggedIn", function() {
@@ -116,6 +124,7 @@ function MapController(Sightings, Airports, Flights, $rootScope, $window) {
         Flights.query(self.destination.code)
           .then(function(data) {
             self.flights = data;
+            console.log(data);
           });
 
       });
@@ -143,7 +152,7 @@ function RegisterController($auth, $state, $rootScope) {
     })
     .then(function(){
       $rootScope.$broadcast("loggedIn");
-      $state.go("map");
+      $state.go("home");
     })
   }
 }
@@ -183,7 +192,24 @@ function gMap($rootScope) {
 
       function openInfoWindow() {
         if(scope.flights.length > 0) {
-          var contentString = "<h4>" + scope.flights[0].OutboundLeg.Destination.CityName + "</h4>";
+          var contentString =
+          "<div id='infoWindow'>" +
+          "<h1 id='firstHeading'>Whale Sighting</h1>"+
+          "<h6>" +scope.markers[0].species +"</h6>" +
+          "<p>" +scope.markers[0].location +"</p>" +
+          "<p>" + scope.markers[0].description +"</p>" +
+          "<small> Sighted At: " +scope.markers[0].sighted_at +"</small>" +
+          "<br>" +
+          "<h1 id='firstHeading'>Ocean Flights</h1>"+
+          "<h5>Outbound Leg</h4>"+
+          "<h6>Origin: "+ scope.flights[0].OutboundLeg.Origin.CityName +"</h6>"+
+          "<h6>Destination: "+ scope.flights[0].OutboundLeg.Destination.CityName + "</h6>"+
+          "<small>Departure Time: "+ scope.flights[0].OutboundLeg.DepartureDate +"</small>" +
+          "<h5>Return Flight</h5>" +
+          "<h6>Destination: "+ scope.flights[0].InboundLeg.Destination.CityName + "<h5>" +
+          "<h6>Origin: "+ scope.flights[0].InboundLeg.Origin.CityName + "</h6>" +
+          "<small>Departure Time: "+ scope.flights[0].InboundLeg.DepartureDate +"</small>"+
+          "</div>";
 
           infoWindow.setContent(contentString);
           infoWindow.open(map, selectedMarker);
@@ -227,8 +253,10 @@ function gMap($rootScope) {
           });
 
           marker.addListener('click', function() {
+            console.log(location);
             $rootScope.$broadcast("findAirports", { lat: location.latitude, lng: location.longitude });
             selectedMarker = this;
+
           });
 
           markerclusterer.addMarker(marker);
