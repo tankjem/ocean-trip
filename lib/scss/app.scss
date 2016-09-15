@@ -186,3 +186,32 @@ main:after{
 .footer{
   color: white;
 }
+
+#tweets-stream {
+  background-color: white;
+  color: black;
+  height: 500px;
+  width: 500px;
+  overflow: scroll;
+  left: 50%;
+  position: relative;
+  margin-left:-250px;
+}
+.tweet {
+  padding: 5px;
+  border: 1px solid rgba(50,51,50,0.5);
+  margin-bottom: 10px;
+  background-color: #fdfdfd;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.names, .contents {
+  margin-left: 60px;
+}
+
+.avatar {
+  height: 50px;
+  width: auto;
+}
