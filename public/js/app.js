@@ -182,7 +182,7 @@ function gMap($rootScope) {
       var airportMarker = null;
       var selectedMarker = null;
 
-      var infoWindow = new google.maps.InfoWindow({disableAutoPan:true});
+      var infoWindow = new google.maps.InfoWindow();
 
       if(!scope.center) throw new Error('You must have a center for your g-map!');
 
@@ -200,7 +200,7 @@ function gMap($rootScope) {
       function openInfoWindow() {
         if(scope.flights.length > 0) {
           var contentString =
-          "<div id='infoWindow'>" +
+          "<div class='animated lightSpeedIn' id='infoWindow'>" +
           "<h1 id='firstHeading'>Whale Sighting</h1>"+
           "<h6>" +selectedMarker.location.species +"</h6>" +
           "<p>" +selectedMarker.location.location +"</p>" +

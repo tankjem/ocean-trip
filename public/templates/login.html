@@ -1,5 +1,5 @@
 <h2>Login</h2>
-<form ng-submit="login.submit()" name="login.form" novalidate>
+<form class="animated slideInDown" ng-submit="login.submit()" name="login.form" novalidate>
   <div class="form-group">
     <input type="email" name="email" ng-model="login.credentials.email" placeholder="Email" class="form-control" ng-focus="login.form.email.$setUntouched()" required>
     <div class="error" ng-messages="login.form.email.$error">

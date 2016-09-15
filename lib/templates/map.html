@@ -1,6 +1,6 @@
-<g-map center="map.center" markers="map.markers" destination="map.destination" flights="map.flights"></g-map>
+<g-map class="animated slideInDown" center="map.center" markers="map.markers" destination="map.destination" flights="map.flights"></g-map>
 <!-- <div class="container"> -->
-<div id="flightInfo" ng-if="map.flights" ng-repeat="flights in map.flights|limitTo:1">
+<div class="animated slideInLeft" id="flightInfo" ng-if="map.flights" ng-repeat="flights in map.flights|limitTo:1">
 <h1 id="firstHeading">Ocean Flights</h1>
 <hr>
 <h5>Outbound Leg</h5>
@@ -13,7 +13,6 @@
 <small>Departure Time: {{flights.InboundLeg.DepartureDate}}</small>
 <br>
 <h5 id="price">Price: £{{flights.MinPrice}}</h5>
-<hr>
 <button type="button" ng-click="map.deselectFlight()">Close</button>
 </div>
 <!-- </div> -->

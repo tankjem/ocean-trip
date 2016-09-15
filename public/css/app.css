@@ -35,8 +35,7 @@ body {
 
 img {
   width: 100%;
-  height: auto;
-  border-radius: 5%; }
+  height: auto; }
 
 h1 {
   font-size: 70px;
@@ -133,7 +132,7 @@ form {
 #flightInfo {
   width: 25%;
   height: 100%;
-  float: right;
+  float: left;
   position: relative;
   background-color: black;
   margin-top: 80px;
