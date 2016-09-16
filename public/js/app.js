@@ -181,7 +181,7 @@ function RegisterController($auth, $state, $rootScope) {
     })
     .then(function(){
       $rootScope.$broadcast("loggedIn");
-      $state.go("home");
+      $state.go("login");
     })
   }
 }
