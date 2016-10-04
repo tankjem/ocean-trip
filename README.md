@@ -51,7 +51,7 @@ Trello for planning
 ### Bugs
 
 * Currently a bug with the airport locator. It is locating an airport with no available flights to the UK.
-* Facebook App url needs to change to Heroku
+* Facebook App url needs to change to Heroku/FACEBook Login does not work on heroku
 * Register form is registering but not changing state and User still has to login after registering. 
 
 ### Future features

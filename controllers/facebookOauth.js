@@ -12,7 +12,7 @@ function login(req, res) {
       client_id: process.env.FACEBOOK_API_KEY,
       client_secret: process.env.FACEBOOK_API_SECRET,
       code: req.body.code,
-      redirect_uri: "http://localhost:8000/"
+      redirect_uri: "https://ocean-trip.herokuapp.com/"
     },
     json: true
   }).then(function(access_token) {
