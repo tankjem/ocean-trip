@@ -6,6 +6,9 @@
   "directories": {
     "test": "test"
   },
+  "engines":{
+    "node": "6.2.2"
+  },
   "scripts": {
     "start": "node app",
     "postinstall": "bower install"
